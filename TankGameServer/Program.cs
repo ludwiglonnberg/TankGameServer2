@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using TankGameServer.DataService;
 using TankGameServer.Hubs;
+using Npgsql.EntityFrameworkCore.PostgreSQL; // Add this using directive for UseNpgsql extension method  
 using Microsoft.AspNetCore.SignalR;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -11,7 +12,7 @@ builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddDbContext<TankContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnectionString")));
+builder.Services.AddDbContext<TankContext>(options => options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 builder.Services.AddSignalR();
 
 
@@ -26,6 +27,12 @@ builder.Services.AddCors(options =>
     });
 });
 var app = builder.Build();
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<TankContext>();
+    db.Database.Migrate(); 
+}
+
 app.UseCors();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
