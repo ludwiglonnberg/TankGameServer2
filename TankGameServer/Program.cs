@@ -16,11 +16,13 @@ builder.Services.AddDbContext<TankContext>(options => options.UseNpgsql(builder.
 builder.Services.AddSignalR();
 
 
+var corsOrigin = builder.Configuration["CORS_ORIGIN"] ?? "http://localhost:5173";
+
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
     {
-        policy.WithOrigins("http://localhost:5173") // Frontend-porten
+        policy.WithOrigins(corsOrigin)
               .AllowAnyHeader()
               .AllowAnyMethod()
               .AllowCredentials();
