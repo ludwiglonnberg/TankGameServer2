@@ -27,6 +27,9 @@ builder.Services.AddCors(options =>
     });
 });
 var app = builder.Build();
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000"; // fallback
+
+app.Urls.Add($"http://*:{port}");
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<TankContext>();
