@@ -8,7 +8,6 @@ namespace TankGameServer.DataService
 
         public TankContext(DbContextOptions<TankContext> options) : base(options) { }
         public DbSet<User> Users { get; set; }
-        public DbSet<Stats> Stats { get; set; }
-        public DbSet<Match> Matches { get; set; }
+
     }
 }
