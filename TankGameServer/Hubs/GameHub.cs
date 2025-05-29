@@ -37,7 +37,7 @@ public class GameHub : Hub
         }
         else if (alivePlayers.Count == 0)
         {
-            await Clients.All.SendAsync("GameOver", null, "Ingen vann");
+            await Clients.All.SendAsync("GameOver", null, "No winner");
         }
     }
 

@@ -26,13 +26,13 @@ namespace TankGameServer.Controllers
                 u.Email == request.Email);
 
             if (user == null)
-                return Unauthorized("Fel e-post eller lösenord");
+                return Unauthorized("Wrong email or password");
 
             var hasher = new PasswordHasher<User>();
             var result = hasher.VerifyHashedPassword(user, user.Password, request.Password);
 
             if (result == PasswordVerificationResult.Failed)
-                return Unauthorized("Fel e-post eller lösenord");
+                return Unauthorized("Wrong email or password");
 
             return Ok(new { user.UserId, user.Username });
         }
@@ -40,7 +40,7 @@ namespace TankGameServer.Controllers
         public IActionResult Register([FromBody] TankRegisterRequest request)
         {
             if (_context.Users.Any(u => u.Username == request.Username))
-                return BadRequest("Användarnamnet är redan taget.");
+                return BadRequest("Username is already in use.");
 
             var user = new User
             {
@@ -55,14 +55,14 @@ namespace TankGameServer.Controllers
             _context.Users.Add(user);
             _context.SaveChanges();
 
-            return Ok("Registrering lyckades!");
+            return Ok("Success");
         }
         [HttpGet("stats/{userId}")]
         public IActionResult GetUserStats(int userId)
         {
             var user = _context.Users.FirstOrDefault(u => u.UserId == userId);
             if (user == null)
-                return NotFound("Användare hittades inte");
+                return NotFound("User not found");
 
             var stats = new
             {
@@ -79,7 +79,7 @@ namespace TankGameServer.Controllers
         {
             var user = _context.Users.FirstOrDefault(u => u.UserId == request.UserId);
             if (user == null)
-                return NotFound("Användare hittades inte");
+                return NotFound("User not found");
 
             // Uppdatera statistik
             user.GamesPlayed += 1;
@@ -94,8 +94,24 @@ namespace TankGameServer.Controllers
 
             _context.SaveChanges();
 
-            return Ok("Statistik uppdaterad!");
+            return Ok("Statistics updated!");
         }
+        [HttpGet("list")]
+        public IActionResult GetAllUsers()
+        {
+            var users = _context.Users.Select(u => new
+            {
+                u.UserId,
+                u.Username,
+                u.Email,
+                u.Wins,
+                u.Losses,
+                u.GamesPlayed
+            }).ToList();
+
+            return Ok(users);
+        }
+
 
 
     }
